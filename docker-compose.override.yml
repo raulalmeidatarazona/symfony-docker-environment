@@ -1,0 +1,43 @@
+version: '3.4'
+
+services:
+  nginx:
+    container_name: base-api-nginx
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+      target: basic
+    volumes:
+      - ./public:/var/www/html
+    ports:
+      - "8081:80"
+    depends_on:
+      - php
+
+  php:
+    container_name: base-api-php
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      target: dev
+      args:
+        UID: $U_ID
+    volumes:
+      - ./:/var/app
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: base-api-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: guest
+      POSTGRES_PASSWORD: guest
+      POSTGRES_DB: base-api
+    volumes:
+      - base_api_data:/var/lib/postgresql/data
+
+volumes:
+  base_api_data:

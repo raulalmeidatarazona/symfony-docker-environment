@@ -1,0 +1,28 @@
+version: '3.4'
+
+services:
+  nginx:
+    container_name: base-api-nginx
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+      target: prod
+    restart: always
+    volumes:
+      - ./public:/var/www/html
+    ports:
+      - "80:80"
+    depends_on:
+      - php
+
+  php:
+    container_name: base-api-php
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      target: prod
+      args:
+        UID: $U_ID
+    restart: always
+    volumes:
+      - ./:/var/app
